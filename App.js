@@ -1,20 +1,38 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import "react-native-gesture-handler";
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
+import { NavigationContainer } from "@react-navigation/native";
+
+import { StatusBar } from "expo-status-bar";
+import { StyleSheet, Text, View } from "react-native";
+import HomeScreenNavigator from "./src/navigation/HomeScreenNavigator";
+import LoadFonts from "./src/components/LoadFonts";
+import { Asset } from "expo-asset";
+import React, { useEffect, useState } from "react";
+import { TaskManagerContextProvider } from "./src/store/task-manager-context";
+
+function useImages(images) {
+    const [loaded, setLoaded] = useState(false);
+
+    useEffect(() => {
+        Asset.loadAsync(images).then(() => setLoaded(true));
+    }, []);
+    return [loaded];
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default function App() {
+    const [imagesLoaded] = useImages([require("./assets/images/nature2.jpg")]);
+
+    if (!imagesLoaded) {
+        return null;
+    }
+
+    return (
+        <LoadFonts>
+            <NavigationContainer>
+                <TaskManagerContextProvider>
+                    <HomeScreenNavigator />
+                </TaskManagerContextProvider>
+            </NavigationContainer>
+        </LoadFonts>
+    );
+}
